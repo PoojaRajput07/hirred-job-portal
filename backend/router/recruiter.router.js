@@ -1,0 +1,15 @@
+import express from "express";
+import { addJob, interviewApplication, MadeMeRecruiter, MyAddedJobs, recruiterpostDetail, rejectApplication, shortlistuser, updateJob, viewJob } from "../controller/recruiter.controller.js";
+import verifyToken from "../Middleware/auth.middleware.js";
+import checkRecruiter from "../Middleware/recruiter.middleware.js";
+const recruiterRouter=express.Router();
+recruiterRouter.route("/addjob").post(verifyToken,checkRecruiter,addJob);
+recruiterRouter.route("/fetchjob").get(verifyToken,checkRecruiter,MyAddedJobs);
+recruiterRouter.route("/makerecruiter").get(verifyToken,MadeMeRecruiter);
+recruiterRouter.route("/viewjob/:id").get(verifyToken,checkRecruiter,viewJob);
+recruiterRouter.route("/updateJob/:id").put(verifyToken,checkRecruiter,updateJob);
+recruiterRouter.route("/postdetail/:id").post(verifyToken,checkRecruiter,recruiterpostDetail);
+recruiterRouter.route("/reject/:id").post(verifyToken,checkRecruiter,rejectApplication);
+recruiterRouter.route("/shortlist/:id").post(verifyToken,checkRecruiter,shortlistuser);
+recruiterRouter.route("/interview/:id").post(verifyToken,checkRecruiter,interviewApplication);
+export default recruiterRouter;
