@@ -5,7 +5,7 @@ export const sendEmail = async ({ to, subject, html }) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        apikey: process.env.ELASTIC_EMAIL_API_KEY,
+        "X-ElasticEmail-ApiKey": process.env.ELASTIC_EMAIL_API_KEY,
       },
       body: JSON.stringify({
         Recipients: {
@@ -28,7 +28,9 @@ export const sendEmail = async ({ to, subject, html }) => {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(data?.Error || data?.message || "Email sending failed");
+    throw new Error(
+      data?.Error || data?.message || "Email sending failed"
+    );
   }
 
   return data;
