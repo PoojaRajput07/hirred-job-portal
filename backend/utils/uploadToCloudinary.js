@@ -2,11 +2,10 @@ import { v2 as cloudinary } from "cloudinary";
 
 const uploadToCloudinary = (buffer, originalName) => {
     return new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
+        const stream = cloudinary.uploader.upload_stream(
             {
                 folder: "job-portal/resumes",
-                resource_type: "raw",
-                public_id: `${Date.now()}-${originalName}`
+                resource_type: "auto",
             },
             (error, result) => {
                 if (error) {
@@ -17,7 +16,7 @@ const uploadToCloudinary = (buffer, originalName) => {
             }
         );
 
-        uploadStream.end(buffer);
+        stream.end(buffer);
     });
 };
 
