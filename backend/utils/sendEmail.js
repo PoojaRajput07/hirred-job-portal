@@ -1,18 +1,18 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export const sendEmail = async ({ to, subject, html }) => {
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.EMAIL_PASS
-    }
-  });
+    const { data, error } = await resend.emails.send({
+        from: process.env.EMAIL_FROM,
+        to,
+        subject,
+        html
+    });
 
-  await transporter.sendMail({
-    from: `"Job Portal" <${process.env.EMAIL}>`,
-    to,
-    subject,
-    html
-  });
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    return data;
 };
