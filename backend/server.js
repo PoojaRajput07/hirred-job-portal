@@ -6,11 +6,13 @@ import cookieParser from "cookie-parser";
 import cors from "cors"
 import recruiterRouter from "./router/recruiter.router.js";
 import candidateRouter from "./router/candidate.router.js";
+import connectCloudinary from "./config/cloudinary.js";
 
 
 dotenv.config();
 connectDB();
 const app=express();
+connectCloudinary();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
