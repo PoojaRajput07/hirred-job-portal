@@ -1258,37 +1258,28 @@ const ApplicationCard = ({ curElem, fetchJobDetail }) => {
             </div>
 
             <a
-              href={`${
-                import.meta.env.VITE_API_URL ||
-                "http://localhost:5000"
-              }/${String(resume || "").replace(
-                /\\/g,
-                "/"
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-                flex
-                items-center
-                justify-center
-                gap-2
-                rounded-lg
-                bg-green-600
-                px-4
-                py-2.5
-                text-sm
-                font-semibold
-                text-white
-                transition
-                hover:bg-green-700
-              "
-            >
-
-              <FaDownload size={13} />
-
-              View Resume
-
-            </a>
+  href={resume}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="
+    flex
+    items-center
+    justify-center
+    gap-2
+    rounded-lg
+    bg-green-600
+    px-4
+    py-2.5
+    text-sm
+    font-semibold
+    text-white
+    transition
+    hover:bg-green-700
+  "
+>
+  <FaDownload size={13} />
+  View Resume
+</a>
 
           </div>
 
