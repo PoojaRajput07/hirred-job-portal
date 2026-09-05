@@ -3,6 +3,7 @@ import Job from "../models/Jobs.models.js";
 import User from "../models/user.models.js"
 import { JobApplication } from "../models/jobApplication.model.js";
 import Recruiter from "../models/Recruiter.model.js";
+import uploadToCloudinary from "../utils/uploadToCloudinary.js";
 
 
 export const madeCandidate=async(req,res)=>{
@@ -141,24 +142,25 @@ export const applyJob=async(req,res)=>{
         const skillList = typeof skills === "string"
             ? skills.split(",").map((skill)=>skill.trim()).filter(Boolean)
             : Array.isArray(skills) ? skills : [];
-        const resume = req.file?.filename ? `uploads/${req.file.filename}` : req.file?.path;
-        console.log("resume",resume);
-        if(!resume){
-            return res.status(400).json({
-                message:"no  resume found"
-                
-            })
-        }
+       
+        
         if(!id){
             return res.status(400).json({
                 message:"no id found"
             })
         }
+        if (!req.file) {
+            return res.status(400).json({
+                message: "no resume found"
+            });
+        }
+
         if(!experience||!skillList.length){
             return res.status(400).json({
                 message:"all fields are required"
             })
         }
+        
         const job=await Job.findById(id);
         if(!job){
             return res.status(400).json({
@@ -182,6 +184,15 @@ export const applyJob=async(req,res)=>{
 
             })
         }
+
+         const uploadResult = await uploadToCloudinary(
+    req.file.buffer,
+    req.file.originalname
+);
+
+        const resume = uploadResult.secure_url;
+
+        console.log("resume:", resume);
 
 
         candidate.Appiedjobs.push(job._id);
