@@ -253,14 +253,7 @@ const Signup = () => {
           </div>
 
           {/* Google Button */}
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full h-11 bg-transparent border-gray-600 text-gray-200 hover:bg-[#0d2533] hover:text-white"
-            onClick={() => toast.info("Google sign-in is not available yet")}
-          >
-            Continue with Google
-          </Button>
+          
 
           {/* Login Link */}
           <p className="text-center text-sm text-gray-400 mt-7">

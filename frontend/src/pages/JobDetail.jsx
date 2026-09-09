@@ -261,17 +261,54 @@ console.log("role",role);
            className="text-sm border-sm w-full"
             name="skills"
             value={applyData.skills}
-            onChange={handleChange}>
+            onChange={handleChange}></Input>
 
-            </Input>
-         <Input placeholder="choose file- no file choosen" 
+            
+<Input
+    placeholder="choose file- no file chosen"
+    className="text-sm"
+    type="file"
+    accept=".pdf,.doc,.docx"
+    onChange={(e) => {
+        const file = e.target.files[0];
 
-         className="text-sm"
-       type="file"
-       accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-       onChange={(e)=>setApplyData(prev=>({
-       ...prev,resume:e.target.files[0]}))}
-       required></Input>
+        if (!file) return;
+
+        const allowedTypes = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ];
+
+        const allowedExtensions = [".pdf", ".doc", ".docx"];
+
+        const extension =
+            "." + file.name.split(".").pop().toLowerCase();
+
+        if (
+            !allowedTypes.includes(file.type) ||
+            !allowedExtensions.includes(extension)
+        ) {
+            toast.error("Only PDF, DOC and DOCX resume files are allowed");
+
+            e.target.value = "";
+            setApplyData(prev => ({
+                ...prev,
+                resume: null
+            }));
+
+            return;
+        }
+
+        setApplyData(prev => ({
+            ...prev,
+            resume: file
+        }));
+    }}
+    required
+/>
+
+
          </div>
         <div>
           

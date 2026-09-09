@@ -4,6 +4,7 @@ import User from "../models/user.models.js"
 import { JobApplication } from "../models/jobApplication.model.js";
 import Recruiter from "../models/Recruiter.model.js";
 import uploadToCloudinary from "../utils/uploadToCloudinary.js";
+import path from "path";
 
 
 export const madeCandidate=async(req,res)=>{
@@ -135,92 +136,123 @@ export const removeWishist=async(req,res)=>{
     }
 }
 
-export const applyJob=async(req,res)=>{
+
+export const applyJob = async (req, res) => {
     try {
-       
-        const{experience,skills,id}=req.body;
+        const { experience, skills, id } = req.body;
+
         const skillList = typeof skills === "string"
-            ? skills.split(",").map((skill)=>skill.trim()).filter(Boolean)
+            ? skills.split(",").map(skill => skill.trim()).filter(Boolean)
             : Array.isArray(skills) ? skills : [];
-       
-        
-        if(!id){
+
+        if (!id) {
             return res.status(400).json({
-                message:"no id found"
-            })
+                message: "no id found"
+            });
         }
+
         if (!req.file) {
             return res.status(400).json({
                 message: "no resume found"
             });
         }
 
-        if(!experience||!skillList.length){
+        // Allowed resume file types
+        const allowedMimeTypes = [
+            "application/pdf",
+            "application/msword",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        ];
+
+        const allowedExtensions = [".pdf", ".doc", ".docx"];
+
+        const fileExtension = path.extname(req.file.originalname).toLowerCase();
+
+        if (
+            !allowedMimeTypes.includes(req.file.mimetype) ||
+            !allowedExtensions.includes(fileExtension)
+        ) {
             return res.status(400).json({
-                message:"all fields are required"
-            })
+                message: "Only PDF, DOC and DOCX resume files are allowed"
+            });
         }
-        
-        const job=await Job.findById(id);
-        if(!job){
+
+        if (!experience || !skillList.length) {
             return res.status(400).json({
-                message:"no job found"
-            })
+                message: "all fields are required"
+            });
         }
-        const candidate=await Candidate.findOne({user:req.user._id});
-        if(!candidate){
+
+        const job = await Job.findById(id);
+
+        if (!job) {
             return res.status(400).json({
-                message:"you are not a candidate"
-            })
+                message: "no job found"
+            });
         }
-        if(String(job.status).toLowerCase()==="closed"){
+
+        const candidate = await Candidate.findOne({
+            user: req.user._id
+        });
+
+        if (!candidate) {
             return res.status(400).json({
-                message:"job is closed now"
-            })
+                message: "you are not a candidate"
+            });
         }
-        if(candidate.Appiedjobs.some((jobId)=>jobId.toString()===id.toString())){
+
+        if (String(job.status).toLowerCase() === "closed") {
+            return res.status(400).json({
+                message: "job is closed now"
+            });
+        }
+
+        if (
+            candidate.Appiedjobs.some(
+                jobId => jobId.toString() === id.toString()
+            )
+        ) {
             return res.status(401).json({
-                message:"already applied",
-
-            })
+                message: "already applied"
+            });
         }
 
-         const uploadResult = await uploadToCloudinary(
-    req.file.buffer,
-    req.file.originalname
-);
+        const uploadResult = await uploadToCloudinary(
+            req.file.buffer,
+            req.file.originalname
+        );
 
         const resume = uploadResult.secure_url;
 
-        console.log("resume:", resume);
-
-
         candidate.Appiedjobs.push(job._id);
         job.noOfApplicants++;
-        const JobApply=await JobApplication.create({
-            job:id,
+
+        const JobApply = await JobApplication.create({
+            job: id,
             experience,
-            skills:skillList,
+            skills: skillList,
             resume,
             candidate
-        })
+        });
+
         await job.save();
         await candidate.save();
+
         return res.status(200).json({
-            message:"candidate applied to job successfully",
+            message: "candidate applied to job successfully",
             candidate,
             JobApply
+        });
 
-        })
-        
     } catch (error) {
         return res.status(500).json({
-            message:"something went wrong in applying to the job",
-            error:error.message
-        })
-        
+            message: "something went wrong in applying to the job",
+            error: error.message
+        });
     }
-}
+};
+
+
 
 // $regex kya karta hai?
 
