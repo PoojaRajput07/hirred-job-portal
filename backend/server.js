@@ -35,6 +35,13 @@ app.get("/",(req,res)=>{
     res.send("backend is running");
 
 })
+
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    message: "Backend is healthy",
+  });
+});
 const port=process.env.PORT||5000;
 app.listen(port,()=>{
     console.log("server is live on",port);
